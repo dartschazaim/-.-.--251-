@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <string.h>
+
+/* Функция для генерации хеша (упрощенный DJB2 алгоритм) */
+void generate_name_hash(const char *name, char *hash_output) {
+    unsigned long hash = 5381;  /* начальное значение */
+    int c;
+    
+    /* Алгоритм DJB2 - простой, но эффективный */
+    while ((c = *name++)) {
+        hash = ((hash << 5) + hash) + c;  /* hash * 33 + c */
+    }
+    
+    /* Преобразуем в 16-ричную строку (16 символов) */
+    sprintf(hash_output, "%016lx", hash);
+}
+
+/* Структура вашего репозитория */
+typedef struct {
+    char name[100];
+    char license_type[50];
+    long repo_size;
+    char creation_date[11];
+    int commit_count;
+    char programming_lang[30];
+    char activity_level[20];
+    char name_hash[17];  /* 16 символов + '\0' */
+} Repository;
+
+/* Пример использования */
+int main() {
+    Repository repo;
+    
+    /* Заполняем данные вашего репозитория */
+    strcpy(repo.name, "-.-.--251-");
+    strcpy(repo.license_type, "MIT");
+    repo.repo_size = 13312;  /* 13 КБ * 1024 = 13312 байт */
+    strcpy(repo.creation_date, "2026-01-03");
+    repo.commit_count = 2;
+    strcpy(repo.programming_lang, "C");
+    strcpy(repo.activity_level, "Средний");  /* или "Низкий" */
+    
+    /* Генерируем хеш названия */
+    generate_name_hash(repo.name, repo.name_hash);
+    
+    /* Выводим результат */
+    printf("=================================\n");
+    printf("ДАННЫЕ РЕПОЗИТОРИЯ ДЛЯ БАЗЫ ДАННЫХ\n");
+    printf("=================================\n");
+    printf("Название:         %s\n", repo.name);
+    printf("Хеш для сортировки: %s\n", repo.name_hash);
+    printf("Тип лицензии:     %s\n", repo.license_type);
+    printf("Размер:           %ld байт\n", repo.repo_size);
+    printf("Дата создания:    %s\n", repo.creation_date);
+    printf("Количество коммитов: %d\n", repo.commit_count);
+    printf("Язык программирования: %s\n", repo.programming_lang);
+    printf("Уровень активности: %s\n", repo.activity_level);
+    printf("=================================\n");
+    
+    /* Демонстрация хешей для разных названий */
+    printf("\nПримеры хешей для сортировки:\n");
+    
+    char test_names[4][50] = {
+        "-.-.--251-",
+        "photo-archive",
+        "linux-kernel",
+        "web-server"
+    };
+    
+    char hash[17];
+    for(int i = 0; i < 4; i++) {
+        generate_name_hash(test_names[i], hash);
+        printf("%-15s -> %s\n", test_names[i], hash);
+    }
+    
+    return 0;
+}
